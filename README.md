@@ -24,6 +24,10 @@ python run_deepvoxels.py --train_test train \
 ```
 To monitor progress, the training code writes tensorboard summaries every 100 steps into a "runs" subdirectory in the logging_root.
 
+The default settings in this repository are slightly different than those discussed in the paper: We set the grid 
+sidelength (grid_dim) to 64 and reduce the number of features (num_grid_feats) to 8. This yields results that are 
+superior to those reported in the paper. If you want to stay true to the paper, set grid_dim to 32 and num_grid_feats to 64.
+
 ### Testing
 Example test call:
 ```
@@ -63,6 +67,10 @@ Some of the code in this project is based on code from these two very cool paper
 [Learning a Multi-View Stereo Machine](https://github.com/akar43/lsm)
 [3DMV](https://github.com/angeladai/3DMV)
 Check them out!
+
+### Future work
+We have more cool work on novel view synthesis, neural scene representations and neural rendering in the pipeline - 
+stay tuned!
 
 ### Contact:
 If you have any questions, please email Vincent Sitzmann at sitzmann@cs.stanford.edu.

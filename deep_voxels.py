@@ -40,7 +40,7 @@ class DeepVoxels(nn.Module):
 
         # The frustrum depth is the number of voxels in the depth dimension of the canonical viewing volume.
         # It's calculated as the length of the diagonal of the DeepVoxels grid.
-        self.frustrum_depth = int(np.ceil(np.sqrt(3) * grid_dims[-1]))
+        self.frustrum_depth = int(np.ceil(1.5 * grid_dims[-1]))
 
         self.nf0 = nf0 # Number of features to use in the outermost layer of all U-Nets
         self.n_grid_feats = num_grid_feats  # Number of features in the DeepVoxels grid.
