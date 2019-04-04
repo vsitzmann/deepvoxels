@@ -41,6 +41,10 @@ python run_deepvoxels.py --train_test test \
 The datasets have been rendered from a set of high-quality 3D scans of a variety of objects.
 The dataset is available for download [here](https://drive.google.com/open?id=1KlWzDdKpmSZ-J-PZFp7j8Z9tUHUvTsE-).
 
+### Trained models
+I've trained models with the default settings for the four objects. The checkpoints can be found 
+[here](https://drive.google.com/drive/folders/1EpMJZPLFVDwXFIvrQ4QSUc9DIXqX67cx?usp=sharing).
+
 ## Misc
 ### Citation:  
 If you find our work useful in your research, please consider citing:

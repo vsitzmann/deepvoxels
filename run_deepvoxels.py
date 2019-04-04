@@ -18,6 +18,8 @@ from losses import *
 from data_util import *
 import util
 
+import time
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--train_test', type=str, required=True,
@@ -322,12 +324,15 @@ def test():
     data_util.cond_mkdir(traj_dir)
     data_util.cond_mkdir(depth_dir)
 
+    forward_time = 0.
+
     print('starting testing...')
     with torch.no_grad():
         iter = 0
         for trgt_pose in dataloader:
             trgt_pose = trgt_pose.squeeze().to(device)
 
+            start = time.time()
             # compute projection mapping
             proj_mapping = projection.compute_proj_idcs(trgt_pose.squeeze(), grid_origin)
             if proj_mapping is None:  # invalid sample
@@ -337,10 +342,12 @@ def test():
             proj_ind_3d, proj_ind_2d = proj_mapping
 
             # Run through model
-            output, depth_maps, _, _ = model(None,
-                                             [proj_ind_3d], [proj_ind_2d],
-                                             None, None,
-                                             None)
+            output, depth_maps, = model(None,
+                                        [proj_ind_3d], [proj_ind_2d],
+                                        None, None,
+                                        None)
+            end = time.time()
+            forward_time += end - start
 
             output[0] = output[0][:, :, 5:-5, 5:-5]
             print("Iter %d" % iter)
@@ -361,6 +368,8 @@ def test():
             cv2.imwrite(os.path.join(depth_dir, "img_%05d.png" % iter), depth_img.astype(np.uint16))
 
             iter += 1
+
+    print("Average forward pass time over %d examples is %f"%(iter, forward_time/iter))
 
 
 def main():
