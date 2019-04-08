@@ -14,7 +14,21 @@ You can create an environment with name "deepvoxels" with all dependencies like 
 conda env create -f src/environment.yml
 ```
 
-### Training:  
+### High-Level structure
+The code is organized as follows:
+* dataio.py loads training and testing data.
+* data_util.py and util.py contain utility functions.
+* run_deepvoxels.py contains the training and testing code as well as setting up the dataset, dataloading, command line arguments etc.
+* deep_voxels.py contains the core DeepVoxels model.
+* custom_layers.py contains implementations of the integration and occlusion submodules.
+* projection.py contains utility functions for 3D and projective geometry.
+
+### Data:
+The datasets have been rendered from a set of high-quality 3D scans of a variety of objects.
+The datasets are available for download [here](https://drive.google.com/open?id=1ScsRlnzy9Bd_n-xw83SP-0t548v63mPH).
+Each object has its own directory, which is the directory that the "data_root" command-line argument of the run_deepvoxels.py script is pointed to.
+
+### Training
 * See `python run_deepvoxels.py --help` for all train options. 
 Example train call:
 ```
@@ -32,10 +46,6 @@ python run_deepvoxels.py --train_test test \
                          --logging_root [path to directoy where test output should be written to] \
                          --checkpoint [path to checkpoint]
 ```
-
-### Data:
-The datasets have been rendered from a set of high-quality 3D scans of a variety of objects.
-The dataset is available for download [here](https://drive.google.com/open?id=1ScsRlnzy9Bd_n-xw83SP-0t548v63mPH).
 
 ## Misc
 ### Citation:  
