@@ -49,16 +49,16 @@ I've trained models with the default settings for the four objects. The checkpoi
 ### Citation:  
 If you find our work useful in your research, please consider citing:
 ```
-@article{sitzmann2018deepvoxels,
-  title={DeepVoxels: Learning Persistent 3D Feature Embeddings},
-  author={Sitzmann, Vincent 
-          and Thies, Justus 
-          and Heide, Felix 
-          and Nie{\ss}ner, Matthias 
-          and Wetzstein, Gordon 
-          and Zollh{\"o}fer, Michael},
-  journal={arXiv preprint arXiv:1812.01024},
-  year={2018}
+@inproceedings{sitzmann2019deepvoxels,
+	author = {Sitzmann, Vincent 
+	          and Thies, Justus 
+	          and Heide, Felix 
+	          and Nie{\ss}ner, Matthias 
+	          and Wetzstein, Gordon 
+	          and Zollh{\"o}fer, Michael},
+	title = {DeepVoxels: Learning Persistent 3D Feature Embeddings},
+	booktitle = {Proc. CVPR},
+	year={2019}
 }
 ```
 

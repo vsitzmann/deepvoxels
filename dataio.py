@@ -51,7 +51,7 @@ class NovelViewTriplets():
             self.all_views.append(self.read_view_tuple(i))
 
         # Calculate the ranking of nearest neigbors
-        self.nn_idcs = data_util.get_nn_ranking([data_util.load_pose(pose) for pose in self.all_poses])
+        self.nn_idcs, _ = data_util.get_nn_ranking([data_util.load_pose(pose) for pose in self.all_poses])
 
         print("*" * 100)
         print("Sampling pattern ", sampling_pattern)

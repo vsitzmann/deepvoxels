@@ -272,7 +272,11 @@ def custom_save(model, path, discriminator=None):
 
 
 def get_nearest_neighbors_pose(train_pose_dir, test_pose_dir, sampling_pattern='skip_2', metric='cos'):
-    skip_val = int(sampling_pattern.split('_')[-1])
+    if sampling_pattern != 'all':
+        skip_val = int(sampling_pattern.split('_')[-1])
+    else:
+        skip_val = 0
+
     train_pose_files = sorted(glob(os.path.join(train_pose_dir, '*.txt')))
     idcs = list(range(len(train_pose_files)))[::skip_val + 1]
     train_pose_files = train_pose_files[::skip_val + 1]

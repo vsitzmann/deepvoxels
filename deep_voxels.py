@@ -80,7 +80,7 @@ class DeepVoxels(nn.Module):
                           norm=self.norm,
                           upsampling_mode='transpose'),
             Conv2dSame(self.nf0, out_channels=self.nf0 // 2, kernel_size=3, bias=False),
-            # nn.BatchNorm2d(self.nf0 // 2),
+            nn.BatchNorm2d(self.nf0 // 2),
             nn.ReLU(True),
             Conv2dSame(self.nf0 // 2, out_channels=3, kernel_size=3),
             nn.Tanh()

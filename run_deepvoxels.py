@@ -329,6 +329,7 @@ def test():
     print('starting testing...')
     with torch.no_grad():
         iter = 0
+        depth_imgs = []
         for trgt_pose in dataloader:
             trgt_pose = trgt_pose.squeeze().to(device)
 
@@ -360,14 +361,19 @@ def test():
 
             depth_img = depth_maps[0].squeeze(0).cpu().detach().numpy()
             depth_img = depth_img.transpose(1, 2, 0)
-            depth_img = ((depth_img + 0.5) * int(np.ceil(np.sqrt(3) * grid_dims[-1])) * voxel_size + opt.near_plane)
-            depth_img *= 10000
-            depth_img = depth_img.round()
+            depth_imgs.append(depth_img)
 
             cv2.imwrite(os.path.join(traj_dir, "img_%05d.png" % iter), output_img.astype(np.uint16)[:, :, ::-1])
-            cv2.imwrite(os.path.join(depth_dir, "img_%05d.png" % iter), depth_img.astype(np.uint16))
 
             iter += 1
+
+        depth_imgs = np.stack(depth_imgs, axis=0)
+        depth_imgs = (depth_imgs - np.amin(depth_imgs)) / (np.amax(depth_imgs) - np.amin(depth_imgs))
+        depth_imgs *= 2**16 - 1
+        depth_imgs = depth_imgs.round()
+
+        for i in range(len(depth_imgs)):
+            cv2.imwrite(os.path.join(depth_dir, "img_%05d.png" % i), depth_imgs[i].astype(np.uint16))
 
     print("Average forward pass time over %d examples is %f"%(iter, forward_time/iter))
 

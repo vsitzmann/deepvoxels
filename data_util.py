@@ -9,6 +9,7 @@ import util
 import pickle as pck
 import math
 from scipy.linalg import logm, norm
+import shutil
 
 
 def square_crop_img(img):
@@ -178,8 +179,9 @@ def get_nn_ranking(poses):
     cos_sim_mat = parsed_poses.dot(parsed_poses.T)
     np.fill_diagonal(cos_sim_mat, -1.)
     nn_idcs = cos_sim_mat.argsort(axis=1).astype(int)  # increasing order
+    cos_sim_mat.sort(axis=1)
 
-    return nn_idcs
+    return nn_idcs, cos_sim_mat
 
 
 def get_filename_no_ext(path):
@@ -208,16 +210,26 @@ def interpolate_training_poses(data_root, trgt_root, num_samples=10, num_steps=1
     cond_mkdir(test_pose_dir)
 
     all_pose_paths = sorted(glob(os.path.join(pose_dir, '*.txt')))
-    nn_rankings = get_nn_ranking([load_pose(path) for path in all_pose_paths])
+    nn_rankings, cos_sim_mat = get_nn_ranking([load_pose(path) for path in all_pose_paths])
+
+    prev_pose_idx = 0
 
     for sample in range(num_samples):
-        rand_idx_1 = np.random.choice(len(all_pose_paths))
+        if sample:
+            rand_idx_1 = prev_pose_idx
+        else:
+            rand_idx_1 = np.random.choice(len(all_pose_paths))
 
         pose_1_path = all_pose_paths[rand_idx_1]
 
         # The second one, sample from the furthest 10 poses
         pose_nns = nn_rankings[rand_idx_1]
-        pose_2_path = all_pose_paths[pose_nns[np.random.randint(low=0, high=10)]]
+        pose_2_idx = pose_nns[np.random.randint(low=1, high=11)] # low is 1 because 0 is the pose itself.
+        pose_2_path = all_pose_paths[pose_2_idx]
+
+        prev_pose_idx = pose_2_idx
+
+        print(rand_idx_1, pose_2_idx)
 
         pose_1_name, pose_2_name = tuple(get_filename_no_ext(path) for path in [pose_1_path, pose_2_path])
 
@@ -229,7 +241,7 @@ def interpolate_training_poses(data_root, trgt_root, num_samples=10, num_steps=1
         for idx, view in enumerate(interpolated_views):
             with open(os.path.join(test_pose_dir, "%06d_%s_%s.txt"%(idx+(sample*num_steps), pose_1_name, pose_2_name)), 'w') as pose_file:
                 pose_file.write(' '.join(map(str, view.reshape(-1).tolist())) + '\n')
-                
+
 
 ##################################################
 ##### Utility function for rotation matrices - from https://github.com/akar43/lsm/blob/b09292c6211b32b8b95043f7daf34785a26bce0a/utils.py #####
@@ -389,21 +401,41 @@ def invert_poses(data_root, trgt_root):
                     matrix_flat.append(inverted_pose[j][k])
             pose_file.write(' '.join(map(str, matrix_flat)) + '\n')
 
-if __name__ == '__main__':
-    data_root = '/home/vincent/data/object_scan_videos/obj-Bus_test'
-    trgt_root = '/home/vincent/data/object_scan_videos/Bus_extrapolation'
-    cond_mkdir(trgt_root)
-    invert_poses(data_root, trgt_root)
 
+def nearest_neighbor_baseline(train_dir, test_dir, target_dir):
+    train_pose_dir, test_pose_dir = [os.path.join(dir, 'pose') for dir in [train_dir, test_dir]]
+    train_img_dir = os.path.join(train_dir, 'rgb')
+
+    nns = util.get_nearest_neighbors_pose(train_pose_dir, test_pose_dir, metric='cos', sampling_pattern='all')
+
+    for i in range(len(nns)):
+        print(os.path.join(train_img_dir, '%06d.png'%nns[i]))
+        img = load_img(os.path.join(train_img_dir, '%06d.png'%nns[i]),
+                       target_size=(512,512),
+                       square_crop=True,
+                       downsampling_order=1)[:,:,::-1]
+        cv2.imwrite(os.path.join(target_dir, '%06d.png'%i), img)
+
+if __name__ == '__main__':
     # Adds noise to training poses.
     # data_root = '/home/vincent/data/deepvoxels/pedestal'
     # trgt_root = data_root + '_5_deg_noise'
     # cond_mkdir(trgt_root)
     # create_noisy_poses(data_root, trgt_root, 5)
 
-    # Interpolates training poses to generate test trajectories
-    # data_root = '/home/vincent/data/object_scan_videos/globe'
-    # trgt_root = data_root + '_test'
-    # cond_mkdir(trgt_root)
-    # interpolate_training_poses(data_root, trgt_root)
+    for object in ['coffee', 'globe', 'stanford_fountain', 'dyck']:
+        # Interpolates training poses to generate test trajectories
+        base_dir ='/home/vincent/data/deep_voxels/data/real_captures'
+        train_root = os.path.join(base_dir, object)
+        trgt_root = train_root + '_test'
+        cond_mkdir(trgt_root)
+        interpolate_training_poses(train_root, trgt_root)
 
+        # Copy the intrinsics file
+        shutil.copy(os.path.join(train_root,'intrinsics.txt'),
+                    os.path.join(trgt_root, 'intrinsics.txt'))
+
+        # Compute nearest neighbor baseline
+        nn_root = os.path.join(base_dir, object + '_nn')
+        cond_mkdir(nn_root)
+        nearest_neighbor_baseline(train_root, trgt_root, nn_root)
