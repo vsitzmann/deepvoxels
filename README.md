@@ -24,10 +24,6 @@ python run_deepvoxels.py --train_test train \
 ```
 To monitor progress, the training code writes tensorboard summaries every 100 steps into a "runs" subdirectory in the logging_root.
 
-The default settings in this repository are slightly different than those discussed in the paper: We set the grid 
-sidelength (grid_dim) to 64 and reduce the number of features (num_grid_feats) to 8. This yields results that are 
-superior to those reported in the paper. If you want to stay true to the paper, set grid_dim to 32 and num_grid_feats to 64.
-
 ### Testing
 Example test call:
 ```
@@ -40,10 +36,6 @@ python run_deepvoxels.py --train_test test \
 ### Data:
 The datasets have been rendered from a set of high-quality 3D scans of a variety of objects.
 The dataset is available for download [here](https://drive.google.com/open?id=1ScsRlnzy9Bd_n-xw83SP-0t548v63mPH).
-
-### Trained models
-I've trained models with the default settings for the four objects. The checkpoints can be found 
-[here](https://drive.google.com/drive/folders/1EpMJZPLFVDwXFIvrQ4QSUc9DIXqX67cx?usp=sharing) (coming soon).
 
 ## Misc
 ### Citation:  
