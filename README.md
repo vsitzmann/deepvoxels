@@ -4,7 +4,7 @@ DeepVoxels is an object-specific, persistent 3D feature embedding. It is found b
 2D observations of an object in a deeplearning framework. At test time, the training set can be discarded, and DeepVoxels 
 can be used to render novel views of the same object. 
 
-[![deepvoxels_video](https://img.youtube.com/vi/HM_WsZhoGXw/0.jpg)](https://www.youtube.com/watch?v=HM_WsZhoGXw)
+[![deepvoxels_video](https://img.youtube.com/vi/HM_WsZhoGXw/0.jpg)](https://www.youtube.com/watch?v=-Vto65Yxt8s)
 
 ## Usage
 ### Installation
