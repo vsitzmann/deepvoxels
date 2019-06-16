@@ -40,51 +40,23 @@ class DeepVoxels(nn.Module):
 
         # The frustrum depth is the number of voxels in the depth dimension of the canonical viewing volume.
         # It's calculated as the length of the diagonal of the DeepVoxels grid.
-        self.frustrum_depth = int(np.ceil(1.5 * grid_dims[-1]))
+        self.frustrum_depth = int(np.ceil(np.sqrt(3) * grid_dims[-1]))
 
         self.nf0 = nf0 # Number of features to use in the outermost layer of all U-Nets
         self.n_grid_feats = num_grid_feats  # Number of features in the DeepVoxels grid.
         self.occnet_nf = 4  # Number of features to use in the 3D unet of the occlusion subnetwork
 
-        num_downs = util.num_divisible_by_2(img_sidelength) - 1
-
         # Feature extractor is an asymmetric UNet: Straight downsampling to 64x64, then a UNet with skip connections
-        self.feature_extractor = nn.Sequential(
-            DownsamplingNet([self.nf0 * (2 ** i) for i in range(num_downs - 5)],
-                            in_channels=3,
-                            use_dropout=False,
-                            norm=self.norm),
-            Unet(in_channels=self.nf0 * (2 ** (num_downs - 6)),
-                 out_channels=self.n_grid_feats,
-                 nf0=self.nf0 * (2 ** (num_downs - 6)),
-                 use_dropout=False,
-                 max_channels=8*self.nf0,
-                 num_down=5,
-                 norm=self.norm)
-        )
+        self.feature_extractor = FeatureExtractor(nf0=self.nf0,
+                                                  out_channels=self.n_grid_feats,
+                                                  input_resolution=img_sidelength,
+                                                  output_sidelength=self.frustrum_img_dims[0])
 
         # Rendering net is an asymmetric UNet: UNet with skip connections and then straight upsampling
-        self.rendering_net = nn.Sequential(
-            Unet(in_channels=self.n_grid_feats,
-                 out_channels=4 * self.nf0,
-                 use_dropout=True,
-                 dropout_prob=0.1,
-                 nf0=self.nf0 * (2 ** (num_downs - 6)),
-                 max_channels=8 * self.nf0,
-                 num_down=5,
-                 norm=self.norm),  # from 64 to 2 and back
-            UpsamplingNet([4 * self.nf0, self.nf0] + max(0, num_downs - 7) * [self.nf0],
-                          in_channels=4 * self.nf0,  # 4*self.nf0
-                          use_dropout=True,
-                          dropout_prob=0.1,
-                          norm=self.norm,
-                          upsampling_mode='transpose'),
-            Conv2dSame(self.nf0, out_channels=self.nf0 // 2, kernel_size=3, bias=False),
-            nn.BatchNorm2d(self.nf0 // 2),
-            nn.ReLU(True),
-            Conv2dSame(self.nf0 // 2, out_channels=3, kernel_size=3),
-            nn.Tanh()
-        )
+        self.rendering_net = RenderingNet(nf0=self.nf0,
+                                          in_channels=self.n_grid_feats,
+                                          input_resolution=self.frustrum_img_dims[0],
+                                          img_sidelength=img_sidelength)
 
         if self.use_occlusion_net:
             self.occlusion_net = OcclusionNet(nf0=self.n_grid_feats,

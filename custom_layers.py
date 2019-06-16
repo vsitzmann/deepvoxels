@@ -11,6 +11,79 @@ from mpl_toolkits.mplot3d import Axes3D
 from pytorch_prototyping.pytorch_prototyping import *
 
 
+class FeatureExtractor(nn.Module):
+    def __init__(self,
+                 nf0,
+                 out_channels,
+                 input_resolution,
+                 output_sidelength):
+        super().__init__()
+
+        norm = nn.BatchNorm2d
+
+        num_down_unet = util.num_divisible_by_2(output_sidelength)
+        num_downsampling = util.num_divisible_by_2(input_resolution) - num_down_unet
+
+        self.net = nn.Sequential(
+            DownsamplingNet([nf0 * (2 ** i) for i in range(num_downsampling)],
+                            in_channels=3,
+                            use_dropout=False,
+                            norm=norm),
+            Unet(in_channels=nf0 * (2 ** (num_downsampling-1)),
+                 out_channels=out_channels,
+                 nf0=nf0 * (2 ** (num_downsampling-1)),
+                 use_dropout=False,
+                 max_channels=8*nf0,
+                 num_down=num_down_unet,
+                 norm=norm)
+        )
+
+    def forward(self, input):
+        return self.net(input)
+
+class RenderingNet(nn.Module):
+    def __init__(self,
+                 nf0,
+                 in_channels,
+                 input_resolution,
+                 img_sidelength):
+        super().__init__()
+
+        num_down_unet = util.num_divisible_by_2(input_resolution)
+        num_upsampling = util.num_divisible_by_2(img_sidelength) - num_down_unet
+
+        self.net = [
+            Unet(in_channels=in_channels,
+                 out_channels=3 if num_upsampling <= 0 else 4*nf0,
+                 outermost_linear=True if num_upsampling <= 0 else False,
+                 use_dropout=True,
+                 dropout_prob=0.1,
+                 nf0=nf0*(2**num_upsampling),
+                 norm=nn.BatchNorm2d,
+                 max_channels=8*nf0,
+                 num_down=num_down_unet)
+        ]
+
+        if num_upsampling > 0:
+            self.net += [
+                UpsamplingNet(per_layer_out_ch=num_upsampling * [nf0],
+                              in_channels=4 * nf0,
+                              upsampling_mode='transpose',
+                              use_dropout=True,
+                              dropout_prob=0.1),
+                Conv2dSame(nf0, out_channels=nf0 // 2, kernel_size=3, bias=False),
+                nn.BatchNorm2d(nf0 // 2),
+                nn.ReLU(True),
+                Conv2dSame(nf0//2, 3, kernel_size=3)
+            ]
+
+        self.net += [nn.Tanh()]
+        self.net = nn.Sequential(*self.net)
+
+    def forward(self, input):
+        return self.net(input)
+
+
 class IntegrationNet(torch.nn.Module):
     '''The 3D integration net integrating new observations into the Deepvoxels grid.
     '''
