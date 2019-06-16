@@ -64,19 +64,19 @@ If you find our work useful in your research, please consider citing:
 }
 ```
 
+### Follow-up work
+Check out our new project, [Scene Representation Networks](https://github.com/vsitzmann/pytorch_prototyping), where we 
+replace the voxel grid with a continuous function that naturally generalizes across scenes and smoothly parameterizes scene surfaces!
+
 ### Submodule "pytorch_prototyping"
 The code in the subdirectory "pytorch_prototyping" comes from a little library of custom pytorch modules that I use throughout my 
 research projects. You can find it [here](https://github.com/vsitzmann/pytorch_prototyping).
 
 ### Other cool projects
 Some of the code in this project is based on code from these two very cool papers:
-[Learning a Multi-View Stereo Machine](https://github.com/akar43/lsm)
-[3DMV](https://github.com/angeladai/3DMV)
+* [Learning a Multi-View Stereo Machine](https://github.com/akar43/lsm)
+* [3DMV](https://github.com/angeladai/3DMV)
 Check them out!
-
-### Future work
-We have more cool work on novel view synthesis, neural scene representations and neural rendering in the pipeline - 
-stay tuned!
 
 ### Contact:
 If you have any questions, please email Vincent Sitzmann at sitzmann@cs.stanford.edu.
