@@ -76,6 +76,7 @@ research projects. You can find it [here](https://github.com/vsitzmann/pytorch_p
 Some of the code in this project is based on code from these two very cool papers:
 * [Learning a Multi-View Stereo Machine](https://github.com/akar43/lsm)
 * [3DMV](https://github.com/angeladai/3DMV)
+
 Check them out!
 
 ### Contact:
