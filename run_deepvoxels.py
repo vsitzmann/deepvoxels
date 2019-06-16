@@ -36,6 +36,9 @@ parser.add_argument('--l1_weight', type=float, default=200, help='Weight of l1 l
 parser.add_argument('--sampling_pattern', type=str, default='skip_2', required=False,
                     help='Whether to use \"all\" images or whether to skip n images (\"skip_1\" picks every 2nd image.')
 
+parser.add_argument('--img_sidelength', type=int, default=512,
+                    help='Sidelength of generated images. Default 512. Only less than native resolution of images is recommended.')
+
 parser.add_argument('--no_occlusion_net', action='store_true', default=False,
                     help='Disables occlusion net and replaces it with a fully convolutional 2d net.')
 parser.add_argument('--num_trgt', type=int, default=2, required=False,
@@ -60,7 +63,7 @@ print('\n'.join(["%s: %s" % (key, value) for key, value in vars(opt).items()]))
 
 device = torch.device('cuda')
 
-input_image_dims = [512, 512]
+input_image_dims = [opt.img_sidelength, opt.img_sidelength]
 proj_image_dims = [64, 64] # Height, width of 2d feature map used for lifting and rendering.
 
 # Read origin of grid, scale of each voxel, and near plane
@@ -82,11 +85,11 @@ grid_origin[:3,3] = grid_barycenter
 
 # Minimum and maximum depth used for rejecting voxels outside of the cmaera frustrum
 depth_min = 0.
-depth_max = opt.grid_dim * voxel_size + opt.near_plane
+depth_max = opt.grid_dim * voxel_size + near_plane
 grid_dims = 3 * [opt.grid_dim]
 
 # Resolution of canonical viewing volume in the depth dimension, in number of voxels.
-frustrum_depth = int(np.ceil(1.5 * grid_dims[-1]))
+frustrum_depth = int(np.ceil(np.sqrt(3) * grid_dims[-1]))
 
 model = DeepVoxels(lifting_img_dims=proj_image_dims,
                    frustrum_img_dims=proj_image_dims,
@@ -204,7 +207,7 @@ def train():
             # Convert the depth maps to metric
             for i in range(len(depth_maps)):
                 depth_maps[i] = ((depth_maps[i] + 0.5) * int(
-                    np.ceil(np.sqrt(3) * grid_dims[-1])) * voxel_size + opt.near_plane)
+                    np.ceil(np.sqrt(3) * grid_dims[-1])) * voxel_size + near_plane)
 
             # We don't enforce a loss on the outermost 5 pixels to alleviate boundary errors
             for i in range(len(trgt_views)):

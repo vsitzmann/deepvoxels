@@ -74,8 +74,6 @@ class ProjectionHelper:
         # Transform to grid coordinates (grid at origin)
         pl = torch.round(torch.bmm(world_to_grid.repeat(8, 1, 1), torch.floor(p)))
         pu = torch.round(torch.bmm(world_to_grid.repeat(8, 1, 1), torch.ceil(p)))
-        pl = torch.round(torch.floor(p))
-        pu = torch.round(torch.ceil(p))
         bbox_min0, _ = torch.min(pl[:, :3, 0], 0)
         bbox_min1, _ = torch.min(pu[:, :3, 0], 0)
         bbox_min = torch.min(bbox_min0, bbox_min1)
