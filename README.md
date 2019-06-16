@@ -65,7 +65,7 @@ If you find our work useful in your research, please consider citing:
 ```
 
 ### Follow-up work
-Check out our new project, [Scene Representation Networks](https://github.com/vsitzmann/pytorch_prototyping), where we 
+Check out our new project, [Scene Representation Networks](https://vsitzmann.github.io/srns/), where we 
 replace the voxel grid with a continuous function that naturally generalizes across scenes and smoothly parameterizes scene surfaces!
 
 ### Submodule "pytorch_prototyping"
