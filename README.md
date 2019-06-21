@@ -11,7 +11,7 @@ can be used to render novel views of the same object.
 This code was developed in python 3.7 and pytorch 1.0. I recommend to use anaconda for dependency management. 
 You can create an environment with name "deepvoxels" with all dependencies like so:
 ```
-conda env create -f src/environment.yml
+conda env create -f environment.yml
 ```
 
 ### High-Level structure
