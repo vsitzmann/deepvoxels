@@ -89,7 +89,7 @@ depth_max = opt.grid_dim * voxel_size + near_plane
 grid_dims = 3 * [opt.grid_dim]
 
 # Resolution of canonical viewing volume in the depth dimension, in number of voxels.
-frustrum_depth = int(np.ceil(np.sqrt(3) * grid_dims[-1]))
+frustrum_depth = 2 * grid_dims[-1]
 
 model = DeepVoxels(lifting_img_dims=proj_image_dims,
                    frustrum_img_dims=proj_image_dims,
