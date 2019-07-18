@@ -33,7 +33,7 @@ parser.add_argument('--experiment_name', type=str, default='', help='(optional) 
 parser.add_argument('--max_epoch', type=int, default=400, help='Maximum number of epochs to train for.')
 parser.add_argument('--lr', type=float, default=0.0004, help='Learning rate.')
 parser.add_argument('--l1_weight', type=float, default=200, help='Weight of l1 loss.')
-parser.add_argument('--sampling_pattern', type=str, default='skip_2', required=False,
+parser.add_argument('--sampling_pattern', type=str, default='all', required=False,
                     help='Whether to use \"all\" images or whether to skip n images (\"skip_1\" picks every 2nd image.')
 
 parser.add_argument('--img_sidelength', type=int, default=512,
