@@ -49,8 +49,9 @@ To create your own dataset, I recommend using Colmap with the following command:
 ```
 colmap automatic_reconstructor --dense 0 --quality low --single_camera 1 --workspace_path [path where to save results] --image_path [path to directory with images]
 ```
-The poses and intrinsics can then easily be parsed with the colmap python scripts supplied in the scripts/python directory 
-in the Colmap github repository. Note that colmap uses the "world2camera" format for its poses, so you'll have to invert them!
+The poses and camera intrinsic parameters can then easily be parsed with the colmap python scripts supplied in the scripts/python directory 
+in the Colmap github repository. Note that colmap uses the "world2camera" format for its poses, so you'll have to invert them! 
+To get the scale and origin of the voxel grid as well as the near plane, inspect the reconstructed point cloud.  
 
 ### Training
 * See `python run_deepvoxels.py --help` for all train options. 
