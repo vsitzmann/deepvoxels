@@ -79,7 +79,7 @@ lift_intrinsic = util.parse_intrinsics(os.path.join(opt.data_root, 'intrinsics.t
 proj_intrinsic = lift_intrinsic
 
 # Set up scale and world coordinates of voxel grid
-voxel_size = (1. / opt.grid_dim) * 1.1 * scale
+voxel_size = (1. / opt.grid_dim) * scale
 grid_origin = torch.tensor(np.eye(4)).float().to(device).squeeze()
 grid_origin[:3,3] = grid_barycenter
 

@@ -23,10 +23,34 @@ The code is organized as follows:
 * custom_layers.py contains implementations of the integration and occlusion submodules.
 * projection.py contains utility functions for 3D and projective geometry.
 
-### Data:
+### Data
 The datasets have been rendered from a set of high-quality 3D scans of a variety of objects.
 The datasets are available for download [here](https://drive.google.com/open?id=1ScsRlnzy9Bd_n-xw83SP-0t548v63mPH).
 Each object has its own directory, which is the directory that the "data_root" command-line argument of the run_deepvoxels.py script is pointed to.
+
+## Coordinate and camera parameter conventions
+This code uses an "OpenCV" style camera coordinate system, where the Y-axis points downwards (the up-vector points in the negative Y-direction), 
+the X-axis points right, and the Z-axis points into the image plane. Camera poses are assumed to be in a "camera2world" format,
+i.e., they denote the matrix transform that transforms camera coordinates to world coordinates.
+
+The code also reads an "intrinsics.txt" file from the dataset directory. This file is expected to be structured as follows:
+```
+f cx cy
+origin_x origin_y origin_z
+near_plane (if 0, defaults to sqrt(3)/2)
+scale
+img_height img_width
+```
+The focal length, cx and cy are in pixels. (origin_x, origin_y, origin_z) denotes the origin of the voxel grid in world coordinates.
+The near plane is also expressed in world units. Per default, each voxel has a sidelength of 1 in world units - the scale is a 
+factor that scales the sidelength of each voxel. Finally, height and width are the resolution of the image.
+
+To create your own dataset, I recommend using Colmap with the following command:
+```
+colmap automatic_reconstructor --dense 0 --quality low --single_camera 1 --workspace_path [path where to save results] --image_path [path to directory with images]
+```
+The poses and intrinsics can then easily be parsed with the colmap python scripts supplied in the scripts/python directory 
+in the Colmap github repository. Note that colmap uses the "world2camera" format for its poses, so you'll have to invert them!
 
 ### Training
 * See `python run_deepvoxels.py --help` for all train options. 
