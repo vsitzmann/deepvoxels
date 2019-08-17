@@ -20,7 +20,7 @@ def backproject(ux, uy, depth, intrinsic):
 def parse_intrinsics(filepath, trgt_sidelength, invert_y=False):
     # Get camera intrinsics
     with open(filepath, 'r') as file:
-        f, cx, cy = map(float, file.readline().split())[:3]
+        f, cx, cy = list(map(float, file.readline().split()))[:3]
         grid_barycenter = torch.Tensor(list(map(float, file.readline().split())))
         near_plane = float(file.readline())
         scale = float(file.readline())
