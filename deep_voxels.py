@@ -85,7 +85,7 @@ class DeepVoxels(nn.Module):
                 self.norm(self.nf0),
                 nn.ReLU(True),
             )
-            print(self.frustrum_collapse_net)
+            print(self.depth_collapse_net)
 
         # The deepvoxels grid is registered as a buffer - meaning, it is safed together with model parameters, but is
         # not trainable.
